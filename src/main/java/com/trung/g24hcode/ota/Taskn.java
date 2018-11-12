@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public class Taskn {
 
-    private static final String USER = "********";
-    private static final String PWD = "*********";
+    private static final String USER = "24hcode.info";
+    private static final String PWD = "O0PT0p4TCX";
 
     public static void main(String[] args) throws IOException {
         NaviClient client = new NaviClient();
@@ -25,7 +25,7 @@ public class Taskn {
         List<Boolean> results = client.doUpdates(list, cookies);
         if (results != null) {
             for (int i = 0; i < results.size(); i++) {
-                System.out.println("record " + i + ": " + String.valueOf(list.get(i)));
+                System.out.println("record " + i + ": " + String.valueOf(results.get(i)));
             }
         } else {
             System.out.println("Something went wrong! please try again!");
