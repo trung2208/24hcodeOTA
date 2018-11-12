@@ -25,7 +25,7 @@ public class Taskn {
         List<Boolean> results = client.doUpdates(list, cookies);
         if (results != null) {
             for (int i = 0; i < results.size(); i++) {
-                System.out.println("record " + i + ": " + String.valueOf(list.get(i)));
+                System.out.println("record " + i + ": " + String.valueOf(results.get(i)));
             }
         } else {
             System.out.println("Something went wrong! please try again!");
