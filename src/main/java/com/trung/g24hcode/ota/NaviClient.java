@@ -31,7 +31,7 @@ public class NaviClient {
         int index = 0;
         int max = servers.length;
         do {
-            System.out.println("index: " + index);
+            System.out.println("server: " + index);
             Document document;
             try {
                 document = Jsoup.connect(servers[index]).get();
@@ -40,11 +40,12 @@ public class NaviClient {
                 Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         } while (!NaviUtil.validate(ip) && index++ < max);
-
+        System.out.println("-- IPv4: "+ip+" --");
         return ip;
     }
 
     public Map<String, String> doLogin(String user, String pwd) {
+        System.out.println("login to " + URL_SITE);
         try {
             Connection.Response response = Jsoup.connect(URL_SITE)
                     .timeout(10 * 1000)
@@ -56,6 +57,7 @@ public class NaviClient {
                     .cookies(response.cookies())
                     .method(Connection.Method.POST)
                     .execute();
+            System.out.println("login success!");
             return r.cookies();
         } catch (IOException ex) {
             Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,6 +66,7 @@ public class NaviClient {
     }
 
     public List<NaviModel> crawData(Map<String, String> cookies) {
+        System.out.println("Starting crawl all record!");
         List<NaviModel> list = new ArrayList<>();
         int index = 0;
         try {
@@ -76,6 +79,7 @@ public class NaviClient {
                     System.out.println("model: " + index++ + "\n " + model.toString());
                 }
             }
+            System.out.println("Crawl successfully!");
         } catch (IOException ex) {
             Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -101,14 +105,23 @@ public class NaviClient {
     }
 
     public List<Boolean> doUpdates(List<NaviModel> models, Map<String, String> cookies) {
-        String ip = this.getMyGlobalIP();
+        System.out.println("Starting Update all record!");
         List<Boolean> list = new ArrayList<>();
-        models.stream().filter((model) -> (NaviUtil.validate(model.getRecValue()) && (model.getRecValue() == null ? ip != null : !model.getRecValue().equals(ip)))).map((model) -> {
+        String ip = this.getMyGlobalIP();
+        if (ip.isEmpty()) {
+            System.out.println("Cant get my ipv4! Check my network! ");
+            return null;
+        }
+        int count = 0;
+        count = models.stream().filter((model) -> (NaviUtil.validate(model.getRecValue()) && !model.getRecValue().equals(ip))).map((model) -> {
             model.setRecValue(ip);
+            //update record
             return model;
-        }).map((model) -> this.UpdateRecord(model, cookies)).forEachOrdered((result) -> {
+        }).map((model) -> this.UpdateRecord(model, cookies)).map((result) -> {
             list.add(result);
-        });
+            return result;
+        }).map((_item) -> 1).reduce(count, Integer::sum);
+        System.out.println(count+" record need to be updated!");
         return list;
 
     }
