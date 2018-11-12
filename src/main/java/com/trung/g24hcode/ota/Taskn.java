@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public class Taskn {
 
-    private static final String USER = "24hcode.info";
-    private static final String PWD = "O0PT0p4TCX";
+    private static final String USER = "********";
+    private static final String PWD = "*********";
 
     public static void main(String[] args) throws IOException {
         NaviClient client = new NaviClient();
