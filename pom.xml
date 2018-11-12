@@ -79,7 +79,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                com.trungg24hcode.ota.Taskn
+                                com.trung.g24hcode.ota.Taskn
                             </mainClass>
                         </manifest>
                     </archive>
