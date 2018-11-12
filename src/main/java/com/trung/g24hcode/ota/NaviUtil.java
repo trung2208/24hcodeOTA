@@ -8,9 +8,7 @@ package com.trung.g24hcode.ota;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  *
@@ -27,7 +25,7 @@ public class NaviUtil {
             model.setRecValue(element.child(3).child(0).text());
             model.setMxPreference(Integer.parseInt(element.child(4).text()));
             System.out.println(model.toString());
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println("error in convertRaw: " + e.getMessage());
             return null;
         }

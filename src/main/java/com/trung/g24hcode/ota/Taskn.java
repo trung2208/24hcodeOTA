@@ -22,9 +22,13 @@ public class Taskn {
         NaviClient client = new NaviClient();
         Map<String, String> cookies = client.doLogin(USER, PWD);
         List<NaviModel> list = client.crawData(cookies);
-        client.doUpdates(list, cookies).forEach(e -> {
-            System.out.println("e: " + e.toString());
-        });
-
+        List<Boolean> results = client.doUpdates(list, cookies);
+        if (results != null) {
+            for (int i = 0; i < results.size(); i++) {
+                System.out.println("record " + i + ": " + String.valueOf(list.get(i)));
+            }
+        } else {
+            System.out.println("Something went wrong! please try again!");
+        }
     }
 }
