@@ -23,7 +23,30 @@ import org.jsoup.select.Elements;
  */
 public class NaviClient {
 
-    private static final String URL_SITE = "https://domain.tenten.vn/";
+    private Map<String, String> cookies;
+    private List<NaviModel> models;
+    private NaviManager manager;
+    private String username;
+    private String passwd;
+
+    public NaviClient() {
+        manager = new NaviManagerImpl();
+    }
+
+    public NaviClient(String username, String passwd) {
+        this.username = username;
+        this.passwd = passwd;
+        manager = new NaviManagerImpl();
+    }
+
+    public void startup() {
+        cookies = manager.doLogin(username, passwd);
+        if (cookies.isEmpty()) {
+            System.out.println("can't login to navi.tenten!");
+        } else {
+            models = manager.crawData(cookies);
+        }
+    }
 
     public String getMyGlobalIP() {
         String[] servers = {"http://ipecho.net/plain/", "http://ipinfo.io/ip", "http://ipconf.cf/"};
@@ -40,71 +63,11 @@ public class NaviClient {
                 Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         } while (!NaviUtil.validate(ip) && index++ < max);
-        System.out.println("-- IPv4: "+ip+" --");
+        System.out.println("-- IPv4: " + ip + " --");
         return ip;
     }
 
-    public Map<String, String> doLogin(String user, String pwd) {
-        System.out.println("login to " + URL_SITE);
-        try {
-            Connection.Response response = Jsoup.connect(URL_SITE)
-                    .timeout(10 * 1000)
-                    .method(Connection.Method.GET)
-                    .execute();
-            Connection.Response r = Jsoup.connect(URL_SITE + "login")
-                    .data("username", user)
-                    .data("password", pwd)
-                    .cookies(response.cookies())
-                    .method(Connection.Method.POST)
-                    .execute();
-            System.out.println("login success!");
-            return r.cookies();
-        } catch (IOException ex) {
-            Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    public List<NaviModel> crawData(Map<String, String> cookies) {
-        System.out.println("Starting crawl all record!");
-        List<NaviModel> list = new ArrayList<>();
-        int index = 0;
-        try {
-            Document document = Jsoup.connect(URL_SITE).cookies(cookies).get();
-            Elements elements = document.select("tr.updatebinh");
-            for (Element e : elements) {
-                NaviModel model = NaviUtil.convertRaw(e);
-                if (model != null) {
-                    list.add(model);
-                    System.out.println("model: " + index++ + "\n " + model.toString());
-                }
-            }
-            System.out.println("Crawl successfully!");
-        } catch (IOException ex) {
-            Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return list;
-    }
-
-    public boolean UpdateRecord(NaviModel model, Map<String, String> cookies) {
-        boolean result = false;
-        System.out.println("record to update: \n" + model.toString());
-        try {
-            Connection.Response r = Jsoup.connect(URL_SITE + "DnsSettingNew/editDns/" + String.valueOf(NaviUtil.getRandom()))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .data(NaviUtil.Parse(model))
-                    .cookies(cookies)
-                    .method(Connection.Method.POST)
-                    .execute();
-            System.out.println("response: " + r.body() + "\n");
-            result = r.body().trim().equals("1");
-        } catch (IOException ex) {
-            Logger.getLogger(NaviClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
-
-    public List<Boolean> doUpdates(List<NaviModel> models, Map<String, String> cookies) {
+    public List<Boolean> doUpdatesIpRecord() {
         System.out.println("Starting Update all record!");
         List<Boolean> list = new ArrayList<>();
         String ip = this.getMyGlobalIP();
@@ -112,16 +75,14 @@ public class NaviClient {
             System.out.println("Cant get my ipv4! Check my network! ");
             return null;
         }
-        int count = 0;
-        count = models.stream().filter((model) -> (NaviUtil.validate(model.getRecValue()) && !model.getRecValue().equals(ip))).map((model) -> {
-            model.setRecValue(ip);
-            //update record
-            return model;
-        }).map((model) -> this.UpdateRecord(model, cookies)).map((result) -> {
+        for (NaviModel model : models) {
+            if (!model.getRecodeType().equals("A") || model.getRecValue().equals(ip)) {
+                continue;
+            }
+            boolean result = manager.updateRecord(model, cookies);
             list.add(result);
-            return result;
-        }).map((_item) -> 1).reduce(count, Integer::sum);
-        System.out.println(count+" record need to be updated!");
+        }
+        System.out.println(list.size() + " record need to be updated and " + list.stream().filter(result -> result).count() + " record update successfully!");
         return list;
 
     }
