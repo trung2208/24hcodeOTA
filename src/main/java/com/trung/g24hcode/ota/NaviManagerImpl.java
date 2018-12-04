@@ -24,7 +24,7 @@ public class NaviManagerImpl implements NaviManager {
         System.out.println("login to " + URL_SITE);
         try {
             Connection.Response response = Jsoup.connect(URL_SITE)
-                    .timeout(10 * 1000)
+                    .timeout(30 * 1000)
                     .method(Connection.Method.GET)
                     .execute();
             Connection.Response r = Jsoup.connect(URL_SITE + "login")

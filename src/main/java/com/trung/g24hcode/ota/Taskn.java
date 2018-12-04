@@ -31,11 +31,13 @@ public class Taskn {
         boolean eof = false;
         Scanner sc = new Scanner(System.in);
         while (!eof) {
+            System.out.println("Enter your command!");
             /**
              * data format is JSON like: { "command":"login", "user":{
              * "username":"24hcode.info", "password":"******" } }
              */
-            String data = sc.nextLine();
+            String data = sc.useDelimiter("\\<end>").next();
+//            String data = sc.nextLine();
             CommandField cmdF = gson.fromJson(data, CommandField.class);
             switch (Command.Parse(cmdF.getCommand())) {
                 case LOGIN:

@@ -39,7 +39,7 @@ public class NaviClient {
 
     private void startup() {
         cookies = manager.doLogin(username, passwd);
-        if (isLogged()) {
+        if (!isLogged()) {
             System.out.println("can't login to navi.tenten!");
         } else {
             models = manager.crawData(cookies);
@@ -106,6 +106,6 @@ public class NaviClient {
     }
 
     public boolean isLogged() {
-        return models.isEmpty();
+        return !cookies.isEmpty();
     }
 }
