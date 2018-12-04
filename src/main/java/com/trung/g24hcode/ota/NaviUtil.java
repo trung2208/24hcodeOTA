@@ -52,4 +52,15 @@ public class NaviUtil {
 
         return ip.matches(PATTERN);
     }
+
+    public static <T extends Enum<T>> T Lookup(Class<T> c, String string) {
+        if (c != null && string != null) {
+            try {
+                return Enum.valueOf(c, string.trim().toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                return Enum.valueOf(c, "ERROR");
+            }
+        }
+        return Enum.valueOf(c, "ERROR");
+    }
 }

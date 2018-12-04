@@ -11,11 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  *
@@ -25,7 +22,7 @@ public class NaviClient {
 
     private Map<String, String> cookies;
     private List<NaviModel> models;
-    private NaviManager manager;
+    private final NaviManager manager;
     private String username;
     private String passwd;
 
@@ -37,11 +34,12 @@ public class NaviClient {
         this.username = username;
         this.passwd = passwd;
         manager = new NaviManagerImpl();
+        this.startup();
     }
 
-    public void startup() {
+    private void startup() {
         cookies = manager.doLogin(username, passwd);
-        if (cookies.isEmpty()) {
+        if (isLogged()) {
             System.out.println("can't login to navi.tenten!");
         } else {
             models = manager.crawData(cookies);
@@ -67,7 +65,7 @@ public class NaviClient {
         return ip;
     }
 
-    public List<Boolean> doUpdatesIpRecord() {
+    public List<Boolean> doUpdateIpRecords() {
         System.out.println("Starting Update all record!");
         List<Boolean> list = new ArrayList<>();
         String ip = this.getMyGlobalIP();
@@ -87,4 +85,27 @@ public class NaviClient {
 
     }
 
+    public boolean addRecord(NaviModel model) {
+        return manager.addRecord(model, cookies);
+    }
+
+    public boolean updateRecord(NaviModel model) {
+        return manager.updateRecord(model, cookies);
+    }
+
+    public boolean removeRecord(NaviModel model) {
+        return manager.removeRecord(model, cookies);
+    }
+
+    public boolean removeAllRecord() {
+        return manager.removeAll(cookies);
+    }
+
+    public boolean createRecordsBy(NaviManager.Options options, String data) {
+        return manager.createRecordBy(options, data, cookies);
+    }
+
+    public boolean isLogged() {
+        return models.isEmpty();
+    }
 }
