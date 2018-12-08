@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.trung.g24hcode.ota;
+package com.trung.g24hcode.utilities;
 
+import com.trung.g24hcode.ota.NaviModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;

@@ -5,6 +5,7 @@
  */
 package com.trung.g24hcode.ota;
 
+import com.trung.g24hcode.utilities.NaviUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

@@ -5,6 +5,7 @@
  */
 package com.trung.g24hcode.ota;
 
+import com.trung.g24hcode.utilities.NaviUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,4 +109,21 @@ public class NaviClient {
     public boolean isLogged() {
         return !cookies.isEmpty();
     }
+
+    public Map<String, String> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
+
+    public List<NaviModel> getModels() {
+        return models;
+    }
+
+    public void setModels(List<NaviModel> models) {
+        this.models = models;
+    }
+    
 }

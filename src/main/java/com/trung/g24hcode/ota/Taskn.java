@@ -5,6 +5,7 @@
  */
 package com.trung.g24hcode.ota;
 
+import com.trung.g24hcode.utilities.NaviUtil;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
